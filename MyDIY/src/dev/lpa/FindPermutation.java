@@ -1,6 +1,9 @@
 package dev.lpa;
 
-// ある文字列から順列を探すアルゴリズム
+import java.util.ArrayList;
+import java.util.List;
+
+// ある文字列から順列を探すアルゴリズム@82ページ
 public class FindPermutation {
 
     public static void main(String[] args) {
@@ -8,45 +11,42 @@ public class FindPermutation {
         String s = "abbc";
         String b = "cbabadcbbabbcbabaabccbabc";
 
-        int counter = 0;
+        List<Integer> result = new ArrayList<>();
 
         // bのスタートを先頭から1ずつ右へスライドする
-        // sの文字数未満は
-        for (int i = 0; i <= b.length() - s.length() ; i++) {
+        // sの文字数未満はfalseのため処理しない
+        for (int i = 0; i <= b.length() - s.length(); i++) {
 
-            String sub =  b.substring(i, i + s.length());
-            System.out.println(sub);
+            String sub = b.substring(i, i + s.length());
+            if (sub.contains("d")) {
+                continue;
+            }
 
+            if (isPermutation(s, sub)) {
+                result.add(i);
+            }
+            ;
         }
-        // bを4文字取得する
-        // bが4文字でない場合、または'd'が含まれる場合は次のループへ
-        // bが4文字の場合かつ、sの順列の場合(is順列関数の呼び出し)、counter++
-        // 次のループへ
 
-        //
-        // 悪い例(=できないよりは良い)
-        //
-        // sの全ての組み合わせを作成して配列に格納する。
-        // 全ての組み合わせを1つずつ取り出して、bを先頭から4文字ずつ取得して探す。
-        // forループをネストした設計なので効率が悪い
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        System.out.println("各順列の場所は" + result + "です");
     }
 
+    private static int charToIndex(char c) {
+        return c - 'a'; // aは97である。したがってa - a = 0 になる。
+    }
+
+    private static boolean isPermutation(String s, String sub) {
+        int[] sCounts = new int[4];
+        int[] subCounts = new int[4];
+
+        for (int i = 0; i < s.length(); i++) {
+            sCounts[charToIndex(s.charAt(i))]++;
+            subCounts[charToIndex(sub.charAt(i))]++;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            if (sCounts[i] != subCounts[i]) return false;
+        }
+        return true;
+    }
 }
