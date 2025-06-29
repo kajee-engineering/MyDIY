@@ -17,17 +17,18 @@ package dev.lpa;
 
 public class BigO {
 
+    static int callStack = 1;
+
     public static void main(String[] args) {
         System.out.println("Total : " + sum(5));
-
     }
 
     static int sum(int n) {
+        System.out.println("コールスタックに " + callStack + " 積まれました。 " + "n は " + n + " です。");
         if (n <= 0) {
-            System.out.println(n);
             return 0;
         }
-        System.out.println(n);
+        callStack++;
         return n + sum(n-1); // 呼び出しごとにコールスタックに積まれる。つまり実際のメモリを消費します。
     }
 }
