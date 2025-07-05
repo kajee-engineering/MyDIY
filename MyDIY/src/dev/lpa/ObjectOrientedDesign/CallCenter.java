@@ -1,46 +1,66 @@
 package dev.lpa.ObjectOrientedDesign;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CallCenter {
+
+    //
+    // 問い合わせ情報
+    //
+    record ContactInfo(int id, String customerName, String content) {}
 
     public static void main(String[] args) {
 
-        //
-        // recordクラスで問い合わせを管理する
-        //
-        record ContactInfo(int id, String customerName, String content) {}
-
-        // var c = new CallCenter
-        // c.run(); // 受付開始(従業員をセット)
-
-        // 問い合わせ番号 = c.callFromCustomer // 問い合わせがくる->問い合わせ情報をデータベースに保持
-
-        // c.dispatchCall(問い合わせ番号); // 最初に繋ぐことのできる従業員に問い合わせを割り当てる(手が空いている応答者に繋ぐ->応答者で対応できない場合はマネージャに繋ぐ。マネージャが忙しい時、または対応できない場合はディレクタに繋ぐ。)
+        var c = new CallCenterCompany();
+        c.dispatchCall( new ContactInfo(100, "Suzuki Taro", "商品Aについて質問") );
     }
 }
-
-
 
 //
 // 登場人物
 //
-class human {
+enum Level {
+    LEVEL1,
+    LEVEL2,
+    LEVEL3,
+}
 
+enum WorkStatus {
+    WAITING,
+    DOING,
+    DONE,
+    BUSY
+}
+
+class human {
+    String name;
+    String age;
 }
 
 class employee extends human {
-    // 3段階のレベルの従業員が存在する(enumを検討する)
+    int ID;
+    int startToDate;
+    Level level;
 
+    public void work(CallCenter.ContactInfo info) {
+
+    }
 }
 
 class operator extends employee {
+    WorkStatus status;
+
 
 }
 
 class manager extends employee {
+    WorkStatus status;
 
 }
 
 class director extends employee {
+    WorkStatus status;
 
 }
 
@@ -49,8 +69,7 @@ class director extends employee {
 //
 interface dispatchCallable {
 
-    void dispatchCall();
-
+    void dispatchCall(CallCenter.ContactInfo info);
 }
 
 //
@@ -58,18 +77,59 @@ interface dispatchCallable {
 //
 class CallCenterCompany implements dispatchCallable {
 
-    // employee<human>() のようにジェネレータ型で従業員の配列を定義する
-    operator o;
-    manager m;
+    private String companyID;
+    private List<employee> employees;
 
-
-    // コンストラクタ
     public CallCenterCompany() {
+        this.employees = new ArrayList<>();
+    }
+
+    public void addEmployee(employee e) {
+        employees.add(e);
+    }
+
+    public List<employee> getEmployees() {
+        return employees;
     }
 
     @Override
-    public void dispatchCall() {
+    public void dispatchCall(CallCenter.ContactInfo info) {
 
+        List<operator> operators = new ArrayList<>();
+        List<manager> managers = new ArrayList<>();
+        List<director> directors = new ArrayList<>();
+
+        // 役職ごとに分ける
+        for (employee e : employees) {
+            if (e instanceof operator o) {
+                operators.add(o);
+            } else if (e instanceof manager m) {
+                managers.add(m);
+            } else if (e instanceof director d) {
+                directors.add(d);
+            }
+        }
+
+        // operator → manager → director の順でWAITINGな人を探してwork()を呼ぶ
+        for (operator o : operators) {
+            if (o.status == WorkStatus.WAITING) {
+                o.work(info);
+                return;
+            }
+        }
+        for (manager m : managers) {
+            if (m.status == WorkStatus.WAITING) {
+                m.work(info);
+                return;
+            }
+        }
+        for (director d : directors) {
+            if (d.status == WorkStatus.WAITING) {
+                d.work(info);
+                return;
+            }
+        }
+        System.out.println("全員対応中です。");
     }
 }
 
