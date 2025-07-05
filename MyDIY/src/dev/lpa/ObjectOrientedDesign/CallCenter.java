@@ -92,8 +92,11 @@ class CallCenterCompany implements dispatchCallable {
         return employees;
     }
 
-    // TODO workを分散する
-    // TODO employeesは毎回取得するよりは共通のテーブルで管理するか
+    // TODO1 workを分散する
+    // TODO2 employeesは毎回取得するよりは共通のテーブルで管理するか
+    // TODO3 `TODO1, TODO2`を消化したら解法を見て実装を見直す
+    // TODO4 解答例を見る
+
     @Override
     public void dispatchCall(CallCenter.ContactInfo info) {
 
